@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MyReactiveSearch</string>
+    <string name="your_place">Lokasi Kamu</string>
 </resources>
