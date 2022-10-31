@@ -11,25 +11,11 @@ import com.dicoding.tourismapp.core.utils.DataMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class TourismRepository private constructor(
+class TourismRepository(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource,
     private val appExecutors: AppExecutors
 ) : ITourismRepository {
-
-    companion object {
-        @Volatile
-        private var instance: TourismRepository? = null
-
-        fun getInstance(
-            remoteData: RemoteDataSource,
-            localData: LocalDataSource,
-            appExecutors: AppExecutors
-        ): TourismRepository =
-            instance ?: synchronized(this) {
-                instance ?: TourismRepository(remoteData, localData, appExecutors)
-            }
-    }
 
     override fun getAllTourism(): Flow<Resource<List<Tourism>>> =
         object : NetworkBoundResource<List<Tourism>, List<TourismResponse>>() {
@@ -41,7 +27,7 @@ class TourismRepository private constructor(
 
             override fun shouldFetch(data: List<Tourism>?): Boolean =
 //                data == null || data.isEmpty()
-                 true // ganti dengan true jika ingin selalu mengambil data dari internet
+                true // ganti dengan true jika ingin selalu mengambil data dari internet
 
             override suspend fun createCall(): Flow<ApiResponse<List<TourismResponse>>> =
                 remoteDataSource.getAllTourism()
@@ -54,7 +40,7 @@ class TourismRepository private constructor(
 
     override fun getFavoriteTourism(): Flow<List<Tourism>> {
         return localDataSource.getFavoriteTourism().map {
-           DataMapper.mapEntitiesToDomain(it)
+            DataMapper.mapEntitiesToDomain(it)
         }
     }
 

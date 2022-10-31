@@ -4,16 +4,7 @@ import com.dicoding.tourismapp.core.data.source.local.entity.TourismEntity
 import com.dicoding.tourismapp.core.data.source.local.room.TourismDao
 import kotlinx.coroutines.flow.Flow
 
-class LocalDataSource private constructor(private val tourismDao: TourismDao) {
-
-    companion object {
-        private var instance: LocalDataSource? = null
-
-        fun getInstance(tourismDao: TourismDao): LocalDataSource =
-            instance ?: synchronized(this) {
-                instance ?: LocalDataSource(tourismDao)
-            }
-    }
+class LocalDataSource(private val tourismDao: TourismDao) {
 
     fun getAllTourism(): Flow<List<TourismEntity>> = tourismDao.getAllTourism()
 
