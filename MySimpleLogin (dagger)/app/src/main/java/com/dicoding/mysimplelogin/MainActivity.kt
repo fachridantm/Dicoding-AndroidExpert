@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         userRepository.checkInstance()
-        userRepository.checkInstance()
+        userRepository2.checkInstance()
 
         if (userRepository.isUserLogin()) {
             moveToHomeActivity()
