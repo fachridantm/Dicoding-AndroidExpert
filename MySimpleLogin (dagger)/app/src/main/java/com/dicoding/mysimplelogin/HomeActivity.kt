@@ -4,21 +4,21 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.dicoding.mysimplelogin.databinding.ActivityHomeBinding
+import javax.inject.Inject
 
 class HomeActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityHomeBinding
+    private lateinit var binding: ActivityHomeBinding
+    @Inject
     lateinit var userRepository: UserRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (application as MyApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val sesi = SessionManager(this)
-        userRepository = UserRepository.getInstance(sesi)
-
-        binding.tvWelcome.text = "Welcome ${userRepository.getUser()}"
+        "Welcome ${userRepository.getUser()}".also { binding.tvWelcome.text = it }
 
         binding.btnLogout.setOnClickListener {
             userRepository.logoutUser()
