@@ -99,7 +99,7 @@ class UserRepository private constructor(
         ): UserRepository =
             instance ?: synchronized(this) {
                 instance
-                    ?: UserRepository(preferences)
+                    ?: UserRepository(preferences, apiService, userDao)
             }.also { instance = it }
     }
 }
