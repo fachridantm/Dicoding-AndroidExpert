@@ -8,24 +8,37 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.dicoding.githubapp.databinding.ActivitySplashScreenBinding
-import com.dicoding.githubapp.helper.ViewModelFactory
-import com.dicoding.githubapp.ui.main.MainActivity
-import com.dicoding.githubapp.ui.main.MainViewModel
+import com.dicoding.githubapp.ui.home.HomeActivity
+import com.dicoding.githubapp.ui.home.HomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 @SuppressLint("CustomSplashScreen")
+@AndroidEntryPoint
 class SplashScreenActivity : AppCompatActivity() {
 
     private lateinit var bindingSplash: ActivitySplashScreenBinding
-    private lateinit var factory: ViewModelFactory
-    private val mainViewModel: MainViewModel by viewModels { factory }
+    private val mainViewModel: HomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bindingSplash = ActivitySplashScreenBinding.inflate(layoutInflater)
         setContentView(bindingSplash.root)
-
         supportActionBar?.hide()
-        factory = ViewModelFactory.getInstance(this)
+
+        setupTheme()
+        setupSplashScreen()
+    }
+
+    private fun setupSplashScreen() {
+        val handler = Handler(mainLooper)
+        handler.postDelayed({
+            val intent = Intent(this@SplashScreenActivity, HomeActivity::class.java)
+            startActivity(intent)
+            finish()
+        }, DELAY_TIME)
+    }
+
+    private fun setupTheme() {
         mainViewModel.getThemeSetting().observe(this) { isNightMode ->
             if (isNightMode) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -33,13 +46,6 @@ class SplashScreenActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
-
-        val handler = Handler(mainLooper)
-        handler.postDelayed({
-            val intent = Intent(this@SplashScreenActivity, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }, DELAY_TIME)
     }
 
     companion object {

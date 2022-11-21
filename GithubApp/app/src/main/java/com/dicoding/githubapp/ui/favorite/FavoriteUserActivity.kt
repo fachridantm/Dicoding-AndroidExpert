@@ -1,20 +1,25 @@
 package com.dicoding.githubapp.ui.favorite
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.githubapp.R
-import com.dicoding.githubapp.helper.ViewModelFactory
+import com.dicoding.githubapp.core.data.source.Resource
+import com.dicoding.githubapp.core.data.source.local.entity.UserEntity
+import com.dicoding.githubapp.core.ui.FavoriteAdapter
+import com.dicoding.githubapp.core.utils.showMessage
 import com.dicoding.githubapp.databinding.ActivityFavoriteUserBinding
+import com.dicoding.githubapp.ui.detail.DetailUserActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FavoriteUserActivity : AppCompatActivity() {
 
     private lateinit var favoriteUserBinding: ActivityFavoriteUserBinding
-    private lateinit var factory: ViewModelFactory
-    private lateinit var favoriteAdapter: FavoriteAdapter
-    private val favoriteViewModel: FavoriteViewModel by viewModels { factory }
+    private val favoriteAdapter: FavoriteAdapter by lazy { FavoriteAdapter(::favoriteItemClicked) }
+    private val favoriteViewModel: FavoriteViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,31 +27,43 @@ class FavoriteUserActivity : AppCompatActivity() {
         favoriteUserBinding = ActivityFavoriteUserBinding.inflate(layoutInflater)
         setContentView(favoriteUserBinding.root)
 
+        initView()
+        setupData()
+    }
+
+    private fun initView() {
         supportActionBar?.apply {
             title = getString(R.string.title_favorite)
             setDisplayHomeAsUpEnabled(true)
         }
+    }
 
-        factory = ViewModelFactory.getInstance(this)
-
-        favoriteAdapter = FavoriteAdapter()
-        showRecyclerList()
-        favoriteViewModel.getFavoritedUser().observe(this) { favList ->
-            favoriteUserBinding.pbFav.visibility = View.GONE
-            favoriteAdapter.updateUserList(favList)
-
-            val isListEmpty = favList.isEmpty()
-            if (isListEmpty) {
-                showImage(isListEmpty)
-            } else {
-                showImage(isListEmpty)
+    private fun setupData() {
+        favoriteViewModel.getFavoritedUsers().observe(this) {
+            when (it) {
+                is Resource.Loading -> {
+                    favoriteUserBinding.pbFav.visibility = View.VISIBLE
+                }
+                is Resource.Success -> {
+                    favoriteUserBinding.pbFav.visibility = View.GONE
+                    if (!it.data.isNullOrEmpty()) {
+                        showImage(false)
+                        setupAdapter()
+                        favoriteAdapter.submitList(it.data)
+                    } else {
+                        showImage(true)
+                    }
+                }
+                is Resource.Error -> {
+                    favoriteUserBinding.pbFav.visibility = View.GONE
+                    it.message.toString().showMessage(this)
+                }
             }
         }
     }
 
-    private fun showRecyclerList() {
+    private fun setupAdapter() {
         favoriteUserBinding.rvFav.apply {
-            layoutManager = LinearLayoutManager(this@FavoriteUserActivity)
             setHasFixedSize(true)
             adapter = favoriteAdapter
         }
@@ -59,8 +76,14 @@ class FavoriteUserActivity : AppCompatActivity() {
             if (isImageVisible) View.VISIBLE else View.INVISIBLE
     }
 
+    private fun favoriteItemClicked(user: UserEntity) {
+        val intent = Intent(this, DetailUserActivity::class.java)
+        intent.putExtra(DetailUserActivity.EXTRA_USER, user.username)
+        startActivity(intent)
+    }
+
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
         return super.onSupportNavigateUp()
     }
 }
