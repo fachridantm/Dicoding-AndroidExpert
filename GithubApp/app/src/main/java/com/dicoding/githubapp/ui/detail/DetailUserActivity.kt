@@ -95,36 +95,76 @@ class DetailUserActivity : AppCompatActivity() {
     }
 
     private fun setupTabLayout(username: String) {
-        val fragment = mutableListOf<Fragment>(
-            FollowFragment.newInstance(FollowFragment.FOLLOWING),
-            FollowFragment.newInstance(FollowFragment.FOLLOWERS)
-        )
+        val tabLayout = detailBinding.tabLayout
+        val viewPager = detailBinding.viewPager
 
-        val fragmentTitle = mutableListOf(
-            getString(R.string.following),
-            getString(R.string.followers)
-        )
+        val fragment = mutableListOf<Fragment>()
+        fragment.add(FollowFragment.newInstance(FollowFragment.FOLLOWERS))
+        fragment.add(FollowFragment.newInstance(FollowFragment.FOLLOWING))
 
-        val tabFollowAdapter = TabFollowAdapter(this@DetailUserActivity, fragment)
-        detailBinding.viewPager.adapter = tabFollowAdapter
+        val tabFollowAdapter = TabFollowAdapter(this, fragment)
+        viewPager.adapter = tabFollowAdapter
 
-        TabLayoutMediator(detailBinding.tabLayout, detailBinding.viewPager) { tab, position ->
-            tab.text = fragmentTitle[position]
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            when (position) {
+                0 -> tab.text = getString(R.string.followers)
+                1 -> tab.text = getString(R.string.following)
+            }
         }.attach()
 
-        detailBinding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (tab?.position == FollowFragment.FOLLOWERS) {
-                    detailUserViewModel.getUserFollowers(username)
-                } else {
-                    detailUserViewModel.getUserFollowing(username)
+                when (tab?.position) {
+                    0 -> setDataFollowers(username, fragment[0] as FollowFragment)
+                    1 -> setDataFollowing(username, fragment[1] as FollowFragment)
                 }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
-        detailUserViewModel.getUserFollowing(username)
+        setDataFollowers(username, fragment[0] as FollowFragment)
+    }
+
+    private fun setDataFollowers(username: String, fragment: FollowFragment) {
+        detailUserViewModel.getUserFollowers(username).observe(this) {
+            when (it) {
+                is Resource.Loading -> {
+                    showLoading(true)
+                }
+                is Resource.Success -> {
+                    showLoading(false)
+                    it.data?.let { users ->
+                        fragment.setupData(users)
+                    }
+                }
+                is Resource.Error -> {
+                    showLoading(false)
+                    it.message.toString().showMessage(this)
+                }
+            }
+        }
+    }
+
+    private fun setDataFollowing(username: String, fragment: FollowFragment) {
+        detailUserViewModel.getUserFollowing(username).observe(this) {
+            when (it) {
+                is Resource.Loading -> {
+                    showLoading(true)
+                }
+                is Resource.Success -> {
+                    showLoading(false)
+                    it.data?.let { users ->
+                        fragment.setupData(users)
+                    }
+                }
+                is Resource.Error -> {
+                    showLoading(false)
+                    it.message.toString().showMessage(this)
+                }
+            }
+        }
     }
 
     private fun setupFavorite() {

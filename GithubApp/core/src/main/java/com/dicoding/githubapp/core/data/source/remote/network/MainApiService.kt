@@ -24,11 +24,11 @@ interface MainApiService {
     suspend fun getUserFollowers(
         @Path("username")
         username: String?,
-    ): List<FollowItem>
+    ): ArrayList<FollowItem>
 
     @GET("users/{username}/following")
     suspend fun getUserFollowing(
         @Path("username")
         username: String?,
-    ): List<FollowItem>
+    ): ArrayList<FollowItem>
 }
