@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class UserUseCaseImpl @Inject constructor(
-    private val userRepository: IUserRepository
+    private val userRepository: IUserRepository,
 ) : UserUseCase {
 
     override fun searchUser(query: String): Flow<Resource<List<User>>> =
@@ -27,17 +27,12 @@ class UserUseCaseImpl @Inject constructor(
     override fun getFavoritedUsers(): Flow<Resource<List<UserEntity>>> =
         userRepository.getFavoritedUsers()
 
-    override suspend fun insertUser(user: UserEntity, isFavorited: Boolean) =
-        userRepository.insertUser(user, isFavorited)
+    override suspend fun insertUser(user: UserEntity) = userRepository.insertUser(user)
 
-    override suspend fun deleteUser(user: UserEntity, isFavorited: Boolean) =
-        userRepository.deleteUser(user, isFavorited)
+    override suspend fun deleteUser(user: UserEntity) = userRepository.deleteUser(user)
 
     override fun getThemeSetting(): Flow<Boolean> = userRepository.getThemeSetting()
 
     override suspend fun setThemeSetting(newSetting: Boolean) =
         userRepository.setThemeSetting(newSetting)
-
-    override suspend fun isUserFavorited(username: String): Boolean =
-        userRepository.isUserFavorited(username)
 }
