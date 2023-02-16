@@ -62,7 +62,9 @@ class DetailUserActivity : AppCompatActivity() {
                     showLoading(true)
                 }
                 is Resource.Success -> {
-                    this.username = username
+                    if (username != null) {
+                        this.username = username
+                    }
                     it.data?.let { user ->
                         showLoading(false)
                         setupData(user)
@@ -168,28 +170,62 @@ class DetailUserActivity : AppCompatActivity() {
     }
 
     private fun setupFavorite() {
-        favoriteViewModel.getFavoritedUsers().observe(this) { user ->
-            val isFavorited = user.data?.any { it.username == username }
-            setFavoriteState(isFavorited ?: false)
+        favoriteViewModel.getFavoritedUsers().observe(this) {
+            when (it) {
+                is Resource.Loading -> {
+                    showLoading(true)
+                }
+                is Resource.Success -> {
+                    showLoading(false)
+                    val data = it.data
+                    if (data != null) {
+                        if (data.isNotEmpty()) {
+                            data.let { users ->
+                                val check = users.any { user -> user.username == username }
+                                if (check) {
+                                    setFavorite(true)
+                                    setFavoriteIcon(true)
+                                } else {
+                                    setFavorite(false)
+                                    setFavoriteIcon(false)
+                                }
+                            }
+                        }
+                    }
+                }
+                is Resource.Error -> {
+                    showLoading(false)
+                    it.message.toString().showMessage(this)
+                }
+            }
+        }
+    }
 
-            detailBinding.fabFav.setOnClickListener {
+    private fun setFavorite(state: Boolean) {
+        detailBinding.fabFav.setOnClickListener {
+            if (state) {
                 val entity = username?.let { UserEntity(it, avatar, false) }
-
                 try {
                     if (entity != null) {
-                        user.data?.any { it.username == username }
-                            ?.let { state -> favoriteViewModel.setFavoritedUser(entity, state) }
+                        setFavoriteIcon(false)
+                        favoriteViewModel.deleteUser(entity)
+                        "Remove $username from favorite".showMessage(this@DetailUserActivity)
                     }
                 } catch (e: Exception) {
-                    e.printStackTrace().toString().showMessage(this)
+                    e.printStackTrace()
+                    e.message.toString().showMessage(this@DetailUserActivity)
                 }
-
-                if (isFavorited == true) {
-                    "Remove $username from favorite".showMessage(this)
-                    setFavoriteState(false)
-                } else {
-                    "Add $username to favorite".showMessage(this)
-                    setFavoriteState(true)
+            } else {
+                val entity = username?.let { UserEntity(it, avatar, true) }
+                try {
+                    if (entity != null) {
+                        setFavoriteIcon(true)
+                        favoriteViewModel.insertUser(entity)
+                        "Add $username to favorite".showMessage(this@DetailUserActivity)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    e.message.toString().showMessage(this@DetailUserActivity)
                 }
             }
         }
@@ -199,7 +235,7 @@ class DetailUserActivity : AppCompatActivity() {
         detailBinding.pbDetail.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
-    private fun setFavoriteState(isFavorited: Boolean) {
+    private fun setFavoriteIcon(isFavorited: Boolean) {
         detailBinding.fabFav.apply {
             if (isFavorited) {
                 setImageDrawable(
