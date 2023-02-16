@@ -29,6 +29,7 @@ class FavoriteUserActivity : AppCompatActivity() {
 
         initView()
         setupData()
+        setupAdapter()
     }
 
     private fun initView() {
@@ -48,7 +49,6 @@ class FavoriteUserActivity : AppCompatActivity() {
                     favoriteUserBinding.pbFav.visibility = View.GONE
                     if (!it.data.isNullOrEmpty()) {
                         showImage(false)
-                        setupAdapter()
                         favoriteAdapter.submitList(it.data)
                     } else {
                         showImage(true)

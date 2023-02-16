@@ -14,13 +14,15 @@ class FavoriteViewModel @Inject constructor(private val userUseCase: UserUseCase
 
     fun getFavoritedUsers() = userUseCase.getFavoritedUsers().asLiveData()
 
-    fun setFavoritedUser(user: UserEntity, isFavorited: Boolean) {
+    fun insertUser(user: UserEntity) {
         viewModelScope.launch {
-            if (isFavorited) {
-                userUseCase.deleteUser(user, false)
-            } else {
-                userUseCase.insertUser(user, true)
-            }
+            userUseCase.insertUser(user)
+        }
+    }
+
+    fun deleteUser(user: UserEntity) {
+        viewModelScope.launch {
+            userUseCase.deleteUser(user)
         }
     }
 }
