@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM UserItem where favorite = 1")
+    @Query("SELECT * FROM User where favorite = 1")
     fun getFavoritedUsers(): Flow<List<UserEntity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -14,7 +14,4 @@ interface UserDao {
 
     @Delete
     suspend fun deleteUser(user: UserEntity)
-
-    @Query("SELECT EXISTS(SELECT * FROM UserItem WHERE login = :username AND favorite = 1)")
-    suspend fun isUserFavorited(username: String): Boolean
 }
