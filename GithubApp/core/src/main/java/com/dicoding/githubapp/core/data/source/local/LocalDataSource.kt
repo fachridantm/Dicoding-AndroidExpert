@@ -18,15 +18,7 @@ class LocalDataSource @Inject constructor(
 
     fun getFavoritedUsers(): Flow<List<UserEntity>> = userDao.getFavoritedUsers()
 
-    suspend fun insertUser(user: UserEntity, isFavorited: Boolean) {
-        userDao.insertUser(user)
-        user.isFavorited = isFavorited
-    }
+    suspend fun insertUser(user: UserEntity) = userDao.insertUser(user)
 
-    suspend fun deleteUser(user: UserEntity, isFavorited: Boolean) {
-        userDao.deleteUser(user)
-        user.isFavorited = isFavorited
-    }
-
-    suspend fun isUserFavorited(username: String) = userDao.isUserFavorited(username)
+    suspend fun deleteUser(user: UserEntity) = userDao.deleteUser(user)
 }
