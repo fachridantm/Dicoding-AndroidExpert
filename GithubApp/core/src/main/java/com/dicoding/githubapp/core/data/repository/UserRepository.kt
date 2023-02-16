@@ -17,7 +17,7 @@ import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val localDataSource: LocalDataSource, private val remoteDataSource: RemoteDataSource
+    private val localDataSource: LocalDataSource, private val remoteDataSource: RemoteDataSource,
 ) : IUserRepository {
     override fun searchUser(query: String): Flow<Resource<List<User>>> = flow {
         emit(Resource.Loading())
@@ -90,18 +90,13 @@ class UserRepository @Inject constructor(
         }
     }
 
-    override suspend fun insertUser(user: UserEntity, isFavorited: Boolean) =
-        localDataSource.insertUser(user, isFavorited)
+    override suspend fun insertUser(user: UserEntity) = localDataSource.insertUser(user)
 
-    override suspend fun deleteUser(user: UserEntity, isFavorited: Boolean) =
-        localDataSource.deleteUser(user, isFavorited)
+    override suspend fun deleteUser(user: UserEntity) = localDataSource.deleteUser(user)
 
     override fun getThemeSetting(): Flow<Boolean> = localDataSource.getThemeSetting()
 
     override suspend fun setThemeSetting(newSetting: Boolean): Unit =
         localDataSource.setThemeSetting(newSetting)
-
-    override suspend fun isUserFavorited(username: String): Boolean =
-        localDataSource.isUserFavorited(username)
 
 }
