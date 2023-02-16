@@ -12,9 +12,8 @@ interface IUserRepository {
     fun getUserFollowers(username: String): Flow<Resource<List<Follow>>>
     fun getUserFollowing(username: String): Flow<Resource<List<Follow>>>
     fun getFavoritedUsers(): Flow<Resource<List<UserEntity>>>
-    suspend fun insertUser(user: UserEntity, isFavorited: Boolean)
-    suspend fun deleteUser(user: UserEntity, isFavorited: Boolean)
+    suspend fun insertUser(user: UserEntity)
+    suspend fun deleteUser(user: UserEntity)
     fun getThemeSetting(): Flow<Boolean>
     suspend fun setThemeSetting(newSetting: Boolean)
-    suspend fun isUserFavorited(username: String): Boolean
 }
