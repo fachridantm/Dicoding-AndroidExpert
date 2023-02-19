@@ -14,7 +14,6 @@ import com.dicoding.githubapp.core.data.source.Resource
 import com.dicoding.githubapp.core.domain.model.User
 import com.dicoding.githubapp.core.utils.*
 import com.dicoding.githubapp.databinding.ActivityDetailBinding
-import com.dicoding.githubapp.ui.favorite.FavoriteViewModel
 import com.dicoding.githubapp.ui.follow.FollowFragment
 import com.dicoding.githubapp.ui.follow.TabFollowAdapter
 import com.google.android.material.tabs.TabLayout
@@ -26,7 +25,6 @@ class DetailUserActivity : AppCompatActivity() {
 
     private lateinit var detailBinding: ActivityDetailBinding
     private val detailUserViewModel: DetailUserViewModel by viewModels()
-    private val favoriteViewModel: FavoriteViewModel by viewModels()
 
     private lateinit var user: User
 
@@ -158,20 +156,20 @@ class DetailUserActivity : AppCompatActivity() {
     }
 
     private fun setupFavorite() {
-        if (favoriteViewModel.hasFavorite.value == false) { favoriteViewModel.setFavorite(user) }
+        if (detailUserViewModel.hasFavorite.value == false) { detailUserViewModel.setFavorite(user) }
 
-        favoriteViewModel.user.observe(this) { user ->
-            favoriteViewModel.isFavorite.observe(this) { isFavorite ->
+        detailUserViewModel.user.observe(this) { user ->
+            detailUserViewModel.isFavorite.observe(this) { isFavorite ->
                 if (isFavorite) {
                     setFavoriteIcon(true)
                 } else {
                     setFavoriteIcon(false)
                 }
                 detailBinding.fabFav.setOnClickListener {
-                    favoriteViewModel.setFavoriteUsers(user, !isFavorite, this)
+                    detailUserViewModel.setFavoriteUsers(user, !isFavorite, this)
                 }
             }
-            favoriteViewModel.toast.observe(this, ::showToast)
+            detailUserViewModel.toast.observe(this, ::showToast)
         }
     }
 

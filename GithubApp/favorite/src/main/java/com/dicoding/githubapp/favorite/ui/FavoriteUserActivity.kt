@@ -1,4 +1,4 @@
-package com.dicoding.githubapp.ui.favorite
+package com.dicoding.githubapp.favorite.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,18 +8,34 @@ import androidx.appcompat.app.AppCompatActivity
 import com.dicoding.githubapp.R
 import com.dicoding.githubapp.core.domain.model.User
 import com.dicoding.githubapp.core.ui.FavoriteAdapter
-import com.dicoding.githubapp.databinding.ActivityFavoriteUserBinding
+import com.dicoding.githubapp.di.FavoriteModuleDependencies
+import com.dicoding.githubapp.favorite.databinding.ActivityFavoriteUserBinding
+import com.dicoding.githubapp.favorite.di.DaggerFavoriteComponent
+import com.dicoding.githubapp.favorite.di.ViewModelFactory
 import com.dicoding.githubapp.ui.detail.DetailUserActivity
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
+import javax.inject.Inject
 
-@AndroidEntryPoint
 class FavoriteUserActivity : AppCompatActivity() {
 
     private lateinit var favoriteUserBinding: ActivityFavoriteUserBinding
     private val favoriteAdapter: FavoriteAdapter by lazy { FavoriteAdapter(::favoriteItemClicked) }
-    private val favoriteViewModel: FavoriteViewModel by viewModels()
+
+    @Inject
+    lateinit var factory: ViewModelFactory
+    private val favoriteViewModel: FavoriteViewModel by viewModels { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        DaggerFavoriteComponent.builder()
+            .context(this)
+            .appDependencies(
+                EntryPointAccessors.fromApplication(
+                    applicationContext,
+                    FavoriteModuleDependencies::class.java
+                )
+            )
+            .build()
+            .inject(this)
         super.onCreate(savedInstanceState)
 
         favoriteUserBinding = ActivityFavoriteUserBinding.inflate(layoutInflater)

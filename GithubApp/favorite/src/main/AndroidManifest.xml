@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:dist="http://schemas.android.com/apk/distribution">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.dicoding.githubapp.favorite">
 
     <dist:module
         dist:instant="false"
@@ -9,4 +12,17 @@
         </dist:delivery>
         <dist:fusing dist:include="true" />
     </dist:module>
+
+    <application tools:ignore="MissingApplicationIcon">
+        <activity
+            android:name=".ui.FavoriteUserActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="favorite" android:scheme="githubfinduser" />
+            </intent-filter>
+        </activity>
+    </application>
 </manifest>

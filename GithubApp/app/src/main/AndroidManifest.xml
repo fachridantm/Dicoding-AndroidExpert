@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.dicoding.githubapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,10 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GithubFovoriteApp">
         <activity
-            android:name="com.dicoding.githubapp.ui.favorite.FavoriteUserActivity"
-            android:exported="false" />
-        <activity
-            android:name="com.dicoding.githubapp.ui.SplashScreenActivity"
+            android:name=".ui.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,10 +22,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.dicoding.githubapp.ui.detail.DetailUserActivity"
+            android:name=".ui.detail.DetailUserActivity"
             android:exported="false" />
         <activity
-            android:name="com.dicoding.githubapp.ui.home.HomeActivity"
+            android:name=".ui.home.HomeActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:launchMode="singleTask" />

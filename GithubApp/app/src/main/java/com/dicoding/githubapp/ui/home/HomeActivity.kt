@@ -1,6 +1,7 @@
 package com.dicoding.githubapp.ui.home
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -17,7 +18,6 @@ import com.dicoding.githubapp.core.ui.ListUserAdapter
 import com.dicoding.githubapp.core.utils.showMessage
 import com.dicoding.githubapp.databinding.ActivityHomeBinding
 import com.dicoding.githubapp.ui.detail.DetailUserActivity
-import com.dicoding.githubapp.ui.favorite.FavoriteUserActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -147,7 +147,8 @@ class HomeActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.favButton -> {
-                startActivity(Intent(this, FavoriteUserActivity::class.java))
+                val uri = Uri.parse("githubfinduser://favorite")
+                startActivity(Intent(Intent.ACTION_VIEW, uri))
                 true
             }
             R.id.modeButton -> {
