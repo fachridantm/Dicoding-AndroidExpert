@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.dynamic-feature'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
@@ -11,15 +11,12 @@ plugins {
 apply from: '../shared_dependencies.gradle'
 
 android {
-    namespace 'com.dicoding.githubapp'
+    namespace 'com.dicoding.githubapp.favorite'
     compileSdk 33
 
     defaultConfig {
-        applicationId 'com.dicoding.githubapp'
         minSdk 21
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,10 +36,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    dynamicFeatures = [':favorite']
 }
 
 dependencies {
+    implementation project(":app")
     implementation project(":core")
     implementation fileTree(dir: "libs", include: ["*.jar"])
 }
