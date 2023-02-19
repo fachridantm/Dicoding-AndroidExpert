@@ -6,10 +6,8 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.dicoding.githubapp.R
-import com.dicoding.githubapp.core.data.source.Resource
-import com.dicoding.githubapp.core.data.source.local.entity.UserEntity
+import com.dicoding.githubapp.core.domain.model.User
 import com.dicoding.githubapp.core.ui.FavoriteAdapter
-import com.dicoding.githubapp.core.utils.showMessage
 import com.dicoding.githubapp.databinding.ActivityFavoriteUserBinding
 import com.dicoding.githubapp.ui.detail.DetailUserActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,24 +39,15 @@ class FavoriteUserActivity : AppCompatActivity() {
 
     private fun setupData() {
         favoriteViewModel.getFavoritedUsers().observe(this) {
-            when (it) {
-                is Resource.Loading -> {
-                    favoriteUserBinding.pbFav.visibility = View.VISIBLE
-                }
-                is Resource.Success -> {
-                    favoriteUserBinding.pbFav.visibility = View.GONE
-                    if (!it.data.isNullOrEmpty()) {
-                        showImage(false)
-                        favoriteAdapter.submitList(it.data)
-                    } else {
-                        showImage(true)
-                    }
-                }
-                is Resource.Error -> {
-                    favoriteUserBinding.pbFav.visibility = View.GONE
-                    it.message.toString().showMessage(this)
-                }
+            showLoading(true)
+            if (!it.isNullOrEmpty()) {
+                showLoading(false)
+                showImage(false)
+            } else {
+                showImage(true)
+                showLoading(false)
             }
+            favoriteAdapter.submitList(it)
         }
     }
 
@@ -69,6 +58,10 @@ class FavoriteUserActivity : AppCompatActivity() {
         }
     }
 
+    private fun showLoading(isLoadingVisible: Boolean) {
+        favoriteUserBinding.pbFav.visibility = if (isLoadingVisible) View.VISIBLE else View.GONE
+    }
+
     private fun showImage(isImageVisible: Boolean) {
         favoriteUserBinding.ivDoodleFav.visibility =
             if (isImageVisible) View.VISIBLE else View.INVISIBLE
@@ -76,9 +69,9 @@ class FavoriteUserActivity : AppCompatActivity() {
             if (isImageVisible) View.VISIBLE else View.INVISIBLE
     }
 
-    private fun favoriteItemClicked(user: UserEntity) {
+    private fun favoriteItemClicked(user: User) {
         val intent = Intent(this, DetailUserActivity::class.java)
-        intent.putExtra(DetailUserActivity.EXTRA_USER, user.username)
+        intent.putExtra(DetailUserActivity.EXTRA_USER, user)
         startActivity(intent)
     }
 

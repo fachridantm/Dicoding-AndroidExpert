@@ -119,7 +119,7 @@ class HomeActivity : AppCompatActivity() {
 
     private fun userItemClicked(user: User) {
         val intent = Intent(this, DetailUserActivity::class.java)
-        intent.putExtra(DetailUserActivity.EXTRA_USER, user.username)
+        intent.putExtra(DetailUserActivity.EXTRA_USER, user)
         startActivity(intent)
     }
 

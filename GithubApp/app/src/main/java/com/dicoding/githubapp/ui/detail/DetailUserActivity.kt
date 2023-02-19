@@ -11,15 +11,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.dicoding.githubapp.R
 import com.dicoding.githubapp.core.data.source.Resource
-import com.dicoding.githubapp.core.data.source.local.entity.UserEntity
 import com.dicoding.githubapp.core.domain.model.User
-import com.dicoding.githubapp.ui.follow.TabFollowAdapter
-import com.dicoding.githubapp.core.utils.convertToShortNumber
-import com.dicoding.githubapp.core.utils.loadUserImage
-import com.dicoding.githubapp.core.utils.showMessage
+import com.dicoding.githubapp.core.utils.*
 import com.dicoding.githubapp.databinding.ActivityDetailBinding
 import com.dicoding.githubapp.ui.favorite.FavoriteViewModel
 import com.dicoding.githubapp.ui.follow.FollowFragment
+import com.dicoding.githubapp.ui.follow.TabFollowAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,9 +28,7 @@ class DetailUserActivity : AppCompatActivity() {
     private val detailUserViewModel: DetailUserViewModel by viewModels()
     private val favoriteViewModel: FavoriteViewModel by viewModels()
 
-    private var username: String? = null
-    private var url: String? = null
-    private var avatar: String? = null
+    private lateinit var user: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,17 +49,14 @@ class DetailUserActivity : AppCompatActivity() {
     }
 
     private fun initData() {
-        val username = intent.getStringExtra(EXTRA_USER)
+        user = intent.parcelable(EXTRA_USER) ?: return
 
-        detailUserViewModel.getDetailUser(username).observe(this) {
+        detailUserViewModel.getDetailUser(user.username).observe(this) {
             when (it) {
                 is Resource.Loading -> {
                     showLoading(true)
                 }
                 is Resource.Success -> {
-                    if (username != null) {
-                        this.username = username
-                    }
                     it.data?.let { user ->
                         showLoading(false)
                         setupData(user)
@@ -90,10 +82,6 @@ class DetailUserActivity : AppCompatActivity() {
             tvFollowing.text = user.following.convertToShortNumber()
             ivAvatar.loadUserImage(user.avatar)
         }
-
-        username = user.username
-        url = user.url
-        avatar = user.avatar
     }
 
     private fun setupTabLayout(username: String) {
@@ -170,65 +158,26 @@ class DetailUserActivity : AppCompatActivity() {
     }
 
     private fun setupFavorite() {
-        favoriteViewModel.getFavoritedUsers().observe(this) {
-            when (it) {
-                is Resource.Loading -> {
-                    showLoading(true)
+        if (favoriteViewModel.hasFavorite.value == false) { favoriteViewModel.setFavorite(user) }
+
+        favoriteViewModel.user.observe(this) { user ->
+            favoriteViewModel.isFavorite.observe(this) { isFavorite ->
+                if (isFavorite) {
+                    setFavoriteIcon(true)
+                } else {
+                    setFavoriteIcon(false)
                 }
-                is Resource.Success -> {
-                    showLoading(false)
-                    val data = it.data
-                    if (data != null) {
-                        if (data.isNotEmpty()) {
-                            data.let { users ->
-                                val check = users.any { user -> user.username == username }
-                                if (check) {
-                                    setFavorite(true)
-                                    setFavoriteIcon(true)
-                                } else {
-                                    setFavorite(false)
-                                    setFavoriteIcon(false)
-                                }
-                            }
-                        }
-                    }
-                }
-                is Resource.Error -> {
-                    showLoading(false)
-                    it.message.toString().showMessage(this)
+                detailBinding.fabFav.setOnClickListener {
+                    favoriteViewModel.setFavoriteUsers(user, !isFavorite, this)
                 }
             }
+            favoriteViewModel.toast.observe(this, ::showToast)
         }
     }
 
-    private fun setFavorite(state: Boolean) {
-        detailBinding.fabFav.setOnClickListener {
-            if (state) {
-                val entity = username?.let { UserEntity(it, avatar, false) }
-                try {
-                    if (entity != null) {
-                        setFavoriteIcon(false)
-                        favoriteViewModel.deleteUser(entity)
-                        "Remove $username from favorite".showMessage(this@DetailUserActivity)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    e.message.toString().showMessage(this@DetailUserActivity)
-                }
-            } else {
-                val entity = username?.let { UserEntity(it, avatar, true) }
-                try {
-                    if (entity != null) {
-                        setFavoriteIcon(true)
-                        favoriteViewModel.insertUser(entity)
-                        "Add $username to favorite".showMessage(this@DetailUserActivity)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    e.message.toString().showMessage(this@DetailUserActivity)
-                }
-            }
-        }
+    private fun showToast(eventMessage: Event<String>) {
+        val message = eventMessage.getContentIfNotHandled() ?: return
+        message.showMessage(this)
     }
 
     private fun showLoading(isLoading: Boolean) {
@@ -240,15 +189,13 @@ class DetailUserActivity : AppCompatActivity() {
             if (isFavorited) {
                 setImageDrawable(
                     ContextCompat.getDrawable(
-                        this@DetailUserActivity,
-                        R.drawable.ic_favorited
+                        this@DetailUserActivity, R.drawable.ic_favorited
                     )
                 )
             } else {
                 setImageDrawable(
                     ContextCompat.getDrawable(
-                        this@DetailUserActivity,
-                        R.drawable.ic_favorite
+                        this@DetailUserActivity, R.drawable.ic_favorite
                     )
                 )
             }
@@ -276,7 +223,7 @@ class DetailUserActivity : AppCompatActivity() {
 
     private fun intentShareAction() {
         val intent = Intent(Intent.ACTION_SEND)
-        val shareUser = "Follow $username on github! \n$url"
+        val shareUser = "Follow $user.username on github! \n$user.url"
         intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_TEXT, shareUser)
         startActivity(Intent.createChooser(intent, "Share with..."))

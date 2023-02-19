@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.dicoding.githubapp.core.domain.model.Follow
+import com.dicoding.githubapp.core.domain.model.User
 import com.dicoding.githubapp.core.ui.FollowAdapter
 import com.dicoding.githubapp.databinding.FragmentFollowBinding
 import com.dicoding.githubapp.ui.detail.DetailUserActivity
@@ -36,7 +36,7 @@ class FollowFragment : Fragment() {
         setupAdapter()
     }
 
-    fun setupData(user: List<Follow>) {
+    fun setupData(user: List<User>) {
         if (user.isNotEmpty()) {
             followAdapter.submitList(user)
             binding?.tvEmpty?.visibility = View.GONE
@@ -52,9 +52,9 @@ class FollowFragment : Fragment() {
         }
     }
 
-    private fun followItemClicked(user: Follow) {
-        val intent = Intent(requireActivity(), DetailUserActivity::class.java)
-        intent.putExtra(DetailUserActivity.EXTRA_USER, user.username)
+    private fun followItemClicked(user: User) {
+        val intent = Intent(requireContext(), DetailUserActivity::class.java)
+        intent.putExtra(DetailUserActivity.EXTRA_USER, user)
         startActivity(intent)
     }
 
