@@ -223,7 +223,7 @@ class DetailUserActivity : AppCompatActivity() {
 
     private fun intentShareAction() {
         val intent = Intent(Intent.ACTION_SEND)
-        val shareUser = "Follow $user.username on github! \n$user.url"
+        val shareUser = getString(R.string.share_button, user.username, user.url)
         intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_TEXT, shareUser)
         startActivity(Intent.createChooser(intent, "Share with..."))
