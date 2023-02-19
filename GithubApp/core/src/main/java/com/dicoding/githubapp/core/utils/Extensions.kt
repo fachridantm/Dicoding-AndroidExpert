@@ -1,6 +1,9 @@
 package com.dicoding.githubapp.core.utils
 
 import android.content.Context
+import android.content.Intent
+import android.os.Build.VERSION.SDK_INT
+import android.os.Parcelable
 import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
@@ -47,5 +50,17 @@ fun Int.convertToShortNumber(): String {
         this < 1000 -> this.toString()
         this < 1000000 -> "${this / 1000}.${(this % 1000) / 100}K"
         else -> "${this / 1000000}.${(this % 1000000) / 100000}M"
+    }
+}
+
+inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
+    SDK_INT >= 33 -> @Suppress("DEPRECATION") getParcelableExtra(key)
+    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+}
+
+inline fun <reified T : Parcelable> Intent.parcelableArrayList(key: String): ArrayList<T>? {
+    return when {
+        SDK_INT >= 33 -> getParcelableArrayListExtra(key, T::class.java)
+        else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
     }
 }

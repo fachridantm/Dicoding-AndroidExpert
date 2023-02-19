@@ -2,22 +2,24 @@ package com.dicoding.githubapp.core.data.repository
 
 import com.dicoding.githubapp.core.data.source.Resource
 import com.dicoding.githubapp.core.data.source.local.LocalDataSource
-import com.dicoding.githubapp.core.data.source.local.entity.UserEntity
 import com.dicoding.githubapp.core.data.source.remote.RemoteDataSource
 import com.dicoding.githubapp.core.data.source.remote.network.ApiResponse
-import com.dicoding.githubapp.core.domain.model.Follow
 import com.dicoding.githubapp.core.domain.model.User
 import com.dicoding.githubapp.core.domain.repository.IUserRepository
+import com.dicoding.githubapp.core.utils.AppExecutors
 import com.dicoding.githubapp.core.utils.DataMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val localDataSource: LocalDataSource, private val remoteDataSource: RemoteDataSource,
+    private val localDataSource: LocalDataSource,
+    private val remoteDataSource: RemoteDataSource,
+    private val appExecutors: AppExecutors,
 ) : IUserRepository {
     override fun searchUser(query: String): Flow<Resource<List<User>>> = flow {
         emit(Resource.Loading())
@@ -52,11 +54,11 @@ class UserRepository @Inject constructor(
         }
     }
 
-    override fun getUserFollowers(username: String): Flow<Resource<List<Follow>>> = flow {
+    override fun getUserFollowers(username: String): Flow<Resource<List<User>>> = flow {
         emit(Resource.Loading())
         when (val response = remoteDataSource.getUserFollowers(username).first()) {
             is ApiResponse.Success -> {
-                val followers = response.data.map { DataMapper.followResponsetoFollow(it) }
+                val followers = response.data.map { DataMapper.followResponsetoUser(it) }
                 emit(Resource.Success(followers))
             }
             is ApiResponse.Error -> {
@@ -66,11 +68,11 @@ class UserRepository @Inject constructor(
         }
     }
 
-    override fun getUserFollowing(username: String): Flow<Resource<List<Follow>>> = flow {
+    override fun getUserFollowing(username: String): Flow<Resource<List<User>>> = flow {
         emit(Resource.Loading())
         when (val response = remoteDataSource.getUserFollowing(username).first()) {
             is ApiResponse.Success -> {
-                val following = response.data.map { DataMapper.followResponsetoFollow(it) }
+                val following = response.data.map { DataMapper.followResponsetoUser(it) }
                 emit(Resource.Success(following))
             }
             is ApiResponse.Error -> {
@@ -80,19 +82,14 @@ class UserRepository @Inject constructor(
         }
     }
 
-    override fun getFavoritedUsers(): Flow<Resource<List<UserEntity>>> = flow {
-        emit(Resource.Loading())
-        val data = localDataSource.getFavoritedUsers().first()
-        if (data.isNotEmpty()) {
-            emit(Resource.Success(data))
-        } else {
-            emit(Resource.Success(emptyList()))
-        }
+    override fun getFavoritedUsers(): Flow<List<User>> = localDataSource.getFavoritedUsers().map {
+        DataMapper.userEntitytoUser(it)
     }
 
-    override suspend fun insertUser(user: UserEntity) = localDataSource.insertUser(user)
-
-    override suspend fun deleteUser(user: UserEntity) = localDataSource.deleteUser(user)
+    override suspend fun setFavoriteUsers(user: User, state: Boolean) {
+        val userEntity = DataMapper.usertoUserEntity(user)
+        appExecutors.diskIO().execute { localDataSource.setFavoriteUsers(userEntity, state) }
+    }
 
     override fun getThemeSetting(): Flow<Boolean> = localDataSource.getThemeSetting()
 

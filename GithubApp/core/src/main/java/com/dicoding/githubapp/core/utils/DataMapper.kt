@@ -1,8 +1,8 @@
 package com.dicoding.githubapp.core.utils
 
+import com.dicoding.githubapp.core.data.source.local.entity.UserEntity
 import com.dicoding.githubapp.core.data.source.remote.response.FollowItem
 import com.dicoding.githubapp.core.data.source.remote.response.UserItem
-import com.dicoding.githubapp.core.domain.model.Follow
 import com.dicoding.githubapp.core.domain.model.User
 
 object DataMapper {
@@ -16,14 +16,46 @@ object DataMapper {
         followers = user.followers,
         following = user.following,
         isFavorited = false,
-        url = user.url
+        url = user.url,
+        followingUrl = "",
+        followersUrl = ""
     )
 
-    fun followResponsetoFollow(follow: FollowItem): Follow = Follow(
+    fun followResponsetoUser(follow: FollowItem): User = User(
         username = follow.username,
+        name = "",
         avatar = follow.avatar,
+        company = "-",
+        location = "-",
+        repository = 0,
+        followers = 0,
+        following = 0,
+        isFavorited = false,
         url = follow.url,
         followingUrl = follow.followingUrl,
         followersUrl = follow.followersUrl
+    )
+
+    fun userEntitytoUser(user: List<UserEntity>): List<User> = user.map {
+        User(
+            username = it.username,
+            name = "",
+            avatar = it.avatar ?: "",
+            company = "",
+            location = "",
+            repository = 0,
+            followers = 0,
+            following = 0,
+            isFavorited = it.isFavorited,
+            url = "",
+            followingUrl = "",
+            followersUrl = ""
+        )
+    }
+
+    fun usertoUserEntity(user: User) = UserEntity(
+        username = user.username,
+        avatar = user.avatar,
+        isFavorited = user.isFavorited
     )
 }

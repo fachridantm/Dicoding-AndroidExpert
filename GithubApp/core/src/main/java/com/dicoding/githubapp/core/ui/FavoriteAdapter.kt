@@ -5,19 +5,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.dicoding.githubapp.core.data.source.local.entity.UserEntity
 import com.dicoding.githubapp.core.databinding.ItemRowUserBinding
+import com.dicoding.githubapp.core.domain.model.User
 import com.dicoding.githubapp.core.utils.loadUserImage
 
-class FavoriteAdapter(private val onItemClick: (UserEntity) -> Unit) :
-    ListAdapter<UserEntity, FavoriteAdapter.ViewHolder>(DIFF_CALLBACK) {
+class FavoriteAdapter(private val onItemClick: (User) -> Unit) :
+    ListAdapter<User, FavoriteAdapter.ViewHolder>(DIFF_CALLBACK) {
 
     inner class ViewHolder(private val binding: ItemRowUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(user: UserEntity) {
+        fun bind(user: User) {
             binding.apply {
                 tvItemUsername.text = user.username
-                user.avatar?.let { ivItemAvatar.loadUserImage(it) }
+                ivItemAvatar.loadUserImage(user.avatar)
                 root.setOnClickListener {
                     onItemClick(user)
                 }
@@ -37,12 +37,12 @@ class FavoriteAdapter(private val onItemClick: (UserEntity) -> Unit) :
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<UserEntity>() {
-            override fun areItemsTheSame(oldItem: UserEntity, newItem: UserEntity): Boolean {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<User>() {
+            override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
                 return oldItem.username == newItem.username
             }
 
-            override fun areContentsTheSame(oldItem: UserEntity, newItem: UserEntity): Boolean {
+            override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
                 return oldItem == newItem
             }
         }

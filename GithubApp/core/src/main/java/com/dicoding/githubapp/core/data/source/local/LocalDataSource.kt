@@ -17,8 +17,15 @@ class LocalDataSource @Inject constructor(
     fun getThemeSetting(): Flow<Boolean> = settingPreferences.getThemeSetting()
 
     fun getFavoritedUsers(): Flow<List<UserEntity>> = userDao.getFavoritedUsers()
-
-    suspend fun insertUser(user: UserEntity) = userDao.insertUser(user)
-
-    suspend fun deleteUser(user: UserEntity) = userDao.deleteUser(user)
+    fun setFavoriteUsers(user: UserEntity, newState: Boolean) {
+        if (newState) {
+            user.isFavorited = newState
+            userDao.apply {
+                insertUser(user)
+                updateUser(user)
+            }
+        } else {
+            userDao.deleteUser(user)
+        }
+    }
 }
