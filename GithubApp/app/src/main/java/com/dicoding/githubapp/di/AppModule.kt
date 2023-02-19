@@ -1,7 +1,7 @@
 package com.dicoding.githubapp.di
 
 import com.dicoding.githubapp.core.domain.usecase.UserUseCase
-import com.dicoding.githubapp.core.domain.usecase.UserUseCaseImpl
+import com.dicoding.githubapp.core.domain.usecase.UserInteractor
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,5 +13,5 @@ import javax.inject.Singleton
 abstract class AppModule {
     @Binds
     @Singleton
-    abstract fun provideUserUseCase(userUseCaseImpl: UserUseCaseImpl): UserUseCase
+    abstract fun provideUserUseCase(userInteractor: UserInteractor): UserUseCase
 }
