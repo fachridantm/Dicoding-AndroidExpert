@@ -56,6 +56,7 @@ object DataMapper {
     fun usertoUserEntity(user: User) = UserEntity(
         username = user.username,
         avatar = user.avatar,
+        url = user.url,
         isFavorited = user.isFavorited
     )
 }

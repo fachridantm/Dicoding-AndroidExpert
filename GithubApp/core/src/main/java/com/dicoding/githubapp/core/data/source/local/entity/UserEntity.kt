@@ -13,6 +13,9 @@ data class UserEntity(
     @ColumnInfo(name = "avatar_url")
     val avatar: String? = null,
 
+    @ColumnInfo(name = "url")
+    val url: String? = null,
+
     @ColumnInfo(name = "favorite")
     var isFavorited: Boolean? = false,
 )
