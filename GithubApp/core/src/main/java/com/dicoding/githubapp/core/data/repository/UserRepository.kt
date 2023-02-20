@@ -64,7 +64,10 @@ class UserRepository @Inject constructor(
             is ApiResponse.Error -> {
                 emit(Resource.Error(response.errorMessage))
             }
-            is ApiResponse.Empty -> {}
+            is ApiResponse.Empty -> {
+                emit(Resource.Success(emptyList()))
+                emit(Resource.Error("User not have followers"))
+            }
         }
     }
 
@@ -78,7 +81,10 @@ class UserRepository @Inject constructor(
             is ApiResponse.Error -> {
                 emit(Resource.Error(response.errorMessage))
             }
-            is ApiResponse.Empty -> {}
+            is ApiResponse.Empty -> {
+                emit(Resource.Success(emptyList()))
+                emit(Resource.Error("User not have following"))
+            }
         }
     }
 

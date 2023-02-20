@@ -18,14 +18,18 @@ class LocalDataSource @Inject constructor(
 
     fun getFavoritedUsers(): Flow<List<UserEntity>> = userDao.getFavoritedUsers()
     fun setFavoriteUsers(user: UserEntity, newState: Boolean) {
-        if (newState) {
-            user.isFavorited = newState
-            userDao.apply {
-                insertUser(user)
-                updateUser(user)
+        try {
+            if (newState) {
+                user.isFavorited = newState
+                userDao.apply {
+                    insertUser(user)
+                    updateUser(user)
+                }
+            } else {
+                userDao.deleteUser(user)
             }
-        } else {
-            userDao.deleteUser(user)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }
