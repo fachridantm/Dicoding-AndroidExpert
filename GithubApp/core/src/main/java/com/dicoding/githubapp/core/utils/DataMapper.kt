@@ -47,7 +47,7 @@ object DataMapper {
             followers = 0,
             following = 0,
             isFavorited = it.isFavorited,
-            url = "",
+            url = it.url ?: "",
             followingUrl = "",
             followersUrl = ""
         )
