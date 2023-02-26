@@ -1,21 +1,23 @@
 package com.dicoding.githubapp.core.data.source.remote.response
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class FollowItem(
 
-    @field:SerializedName("following_url")
+    @Json(name = "following_url")
     val followingUrl: String,
 
-    @field:SerializedName("login")
+    @Json(name = "login")
     val username: String,
 
-    @field:SerializedName("followers_url")
+    @Json(name = "followers_url")
     val followersUrl: String,
 
-    @field:SerializedName("avatar_url")
+    @Json(name = "avatar_url")
     val avatar: String,
 
-    @field:SerializedName("html_url")
+    @Json(name = "html_url")
     val url: String,
 )

@@ -1,12 +1,14 @@
 package com.dicoding.githubapp.core.data.source.remote.response
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class UserResponse(
 
-    @field:SerializedName("total_count")
+    @Json(name = "total_count")
     val amount: Int? = 0,
 
-    @field:SerializedName("items")
+    @Json(name = "items")
     val items: List<UserItem>? = null
 )
