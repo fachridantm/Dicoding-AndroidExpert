@@ -26,7 +26,7 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.5.5"
     implementation "com.github.kirich1409:viewbindingpropertydelegate:1.5.3"
 
-    // Data Store
+    // Datastore
     implementation "androidx.datastore:datastore-preferences-core:1.0.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     implementation "androidx.datastore:datastore-preferences-rxjava2:1.0.0"
