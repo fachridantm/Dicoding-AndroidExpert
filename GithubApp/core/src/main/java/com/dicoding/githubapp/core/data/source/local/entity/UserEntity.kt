@@ -17,5 +17,5 @@ data class UserEntity(
     val url: String? = null,
 
     @ColumnInfo(name = "favorite")
-    var isFavorited: Boolean? = false,
+    var isFavorited: Boolean = false,
 )

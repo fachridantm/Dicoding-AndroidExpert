@@ -16,5 +16,5 @@ data class User(
     val url: String,
     val followingUrl: String,
     val followersUrl: String,
-    var isFavorited: Boolean? = false
+    var isFavorited: Boolean = false
 ) : Parcelable
