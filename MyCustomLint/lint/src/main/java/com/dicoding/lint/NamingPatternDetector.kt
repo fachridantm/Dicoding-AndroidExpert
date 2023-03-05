@@ -12,9 +12,10 @@ class NamingPatternDetector : Detector(), Detector.UastScanner {
             override fun visitClass(node: UClass) {
                 if (node.name?.isDefinedCamelCase() == false) {
                     context.report(
-                        issue = ISSUE_NAMING_PATTERN,
-                        location = context.getNameLocation(node),
-                        message = "Penulisan nama class harus menggunakan CamelCase."
+                        ISSUE_NAMING_PATTERN,
+                        node,
+                        context.getNameLocation(node),
+                        "Penulisan nama class harus menggunakan CamelCase."
                     )
                 }
             }
@@ -23,12 +24,12 @@ class NamingPatternDetector : Detector(), Detector.UastScanner {
 
     companion object {
         val ISSUE_NAMING_PATTERN: Issue = Issue.create(
-            // ID: used in @SuppressLint warnings etc
+            // ID: digunakan untuk @SuppressLint warnings dsb
             id = "NamingPattern",
-            // Title -- shown in the IDE's preference dialog, as category headers in the
+            // Judul yang muncul pada dialog IDE ketika ada warning
             // Analysis results window, etc
             briefDescription = "Penulisan nama class harus menggunakan CamelCase.",
-            // Full explanation of the issue; you can use some markdown markup such as
+            // Penjelasan lengkap issue; kamu bisa menggunakan format markdown seperti
             // `monospace`, *italic*, and **bold**.
             explanation = """
                 Tulis nama class dengan menggunakan CamelCase.
