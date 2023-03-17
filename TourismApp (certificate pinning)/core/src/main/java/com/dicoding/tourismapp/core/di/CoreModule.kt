@@ -37,7 +37,9 @@ val networkModule = module {
     single {
         val hostname = "tourism-api.dicoding.dev"
         val certificatePinner = CertificatePinner.Builder()
-            .add(hostname, "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")
+            .add(hostname, "sha256/V1KASoEuTI4SN1xS2XcHyVa0gzvPE7gVHA7AzH511Ig=")
+            .add(hostname, "sha256/jQJTbIh0grw0/1TkHSumWb+Fs0Ggogr621gT3PvPKG0=")
+            .add(hostname, "sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=")
             .build()
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
