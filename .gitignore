@@ -1,16 +1,7 @@
-# Created by https://www.toptal.com/developers/gitignore/api/windows
-# Edit at https://www.toptal.com/developers/gitignore?templates=windows
+# Created by https://www.toptal.com/developers/gitignore/api/android,windows,firebase
+# Edit at https://www.toptal.com/developers/gitignore?templates=android,windows,firebase
 
-### Windows ###
-# Windows thumbnail cache files
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-
-# Dump file
-*.stackdump
-
+### Android ###
 # Gradle files
 .gradle/
 build/
@@ -39,6 +30,37 @@ render.experimental.xml
 *.jks
 *.keystore
 
+# Google Services (e.g. APIs or Firebase)
+google-services.json
+
+# Android Profiling
+*.hprof
+
+### Android Patch ###
+gen-external-apklibs
+
+# Replacement of .externalNativeBuild directories introduced
+# with Android Studio 3.5.
+
+### Firebase ###
+.idea
+**/node_modules/*
+**/.firebaserc
+
+### Firebase Patch ###
+.runtimeconfig.json
+.firebase/
+
+### Windows ###
+# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Dump file
+*.stackdump
+
 # Folder config file
 [Dd]esktop.ini
 
@@ -55,4 +77,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/windows
+# End of https://www.toptal.com/developers/gitignore/api/android,windows,firebase
