@@ -32,6 +32,7 @@ buildscript {
 
     ext.mapbox_version = "9.2.0"
     ext.mapbox_annotation_version = "0.8.0"
+    ext.mapbox_telemetry_version = "6.1.0"
 
     repositories {
         google()
